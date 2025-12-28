@@ -5,7 +5,12 @@ import { ImageUpload } from "@/components/image-upload";
 import { ImagePreview } from "@/components/image-preview";
 import { FoodResultsTable } from "@/components/food-results-table";
 import { CalorieSummary } from "@/components/calorie-summary";
-import { FoodItem, AnalyzeResponse, PORTION_GRAMS, generateId } from "@/lib/types";
+import {
+  FoodItem,
+  AnalyzeResponse,
+  PORTION_GRAMS,
+  generateId,
+} from "@/lib/types";
 
 export default function Home() {
   const [imageBase64, setImageBase64] = useState<string | null>(null);
@@ -93,9 +98,9 @@ export default function Home() {
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/50 via-background to-lime-950/30" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent" />
-        
+
         {/* Grid pattern overlay */}
-        <div 
+        <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2322c55e' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -110,17 +115,19 @@ export default function Home() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span className="text-sm text-emerald-400 font-medium">AI-Powered Nutrition Analysis</span>
+              <span className="text-sm text-emerald-400 font-medium">
+                AI-Powered Nutrition Analysis
+              </span>
             </div>
-            
+
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
-              <span className="text-foreground">GetFit</span>
-              <span className="text-emerald-400"> by Darsh</span>
-          </h1>
-            
+              <span className="text-foreground">Track</span>
+              <span className="text-emerald-400"> Calories</span>
+            </h1>
+
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Upload a photo of your meal and let AI instantly analyze the nutritional content. 
-              Track your calories with precision and ease.
+              Upload a photo of your meal and let AI instantly analyze the
+              nutritional content. Track your calories with precision and ease.
             </p>
           </div>
 
@@ -129,7 +136,10 @@ export default function Home() {
             {/* Left Column - Upload & Preview */}
             <div className="space-y-6">
               {!imageBase64 ? (
-                <ImageUpload onImageSelect={handleImageSelect} disabled={isAnalyzing} />
+                <ImageUpload
+                  onImageSelect={handleImageSelect}
+                  disabled={isAnalyzing}
+                />
               ) : (
                 <ImagePreview
                   imageBase64={imageBase64}
@@ -171,9 +181,9 @@ export default function Home() {
             </div>
 
             {/* Right Column - Summary */}
-            <div className="lg:sticky lg:top-8 lg:self-start">
+            <div className="lg:sticky lg:top-24 lg:self-start">
               <CalorieSummary foods={foods} />
-              
+
               {/* Empty State */}
               {foods.length === 0 && (
                 <div className="text-center py-16 px-8">
@@ -196,7 +206,8 @@ export default function Home() {
                     No Analysis Yet
                   </h3>
                   <p className="text-sm text-muted-foreground/70">
-                    Upload a meal image and click &quot;Analyze&quot; to see nutritional breakdown
+                    Upload a meal image and click &quot;Analyze&quot; to see
+                    nutritional breakdown
                   </p>
                 </div>
               )}
@@ -211,6 +222,6 @@ export default function Home() {
           <p>Built with Next.js, OpenAI Vision, and shadcn/ui</p>
         </div>
       </footer>
-      </main>
+    </main>
   );
 }

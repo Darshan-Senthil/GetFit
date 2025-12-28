@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
+import { Navbar } from "@/components/navbar";
+import { WorkoutProvider } from "@/context/workout-context";
+import { Toaster } from "@/components/ui/sonner";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -9,8 +12,9 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "GetFit by Darsh | AI Meal Analyzer",
-  description: "Upload a photo of your meal and let AI instantly analyze the nutritional content. Track your calories with precision and ease.",
+  title: "GetFit by Darsh | AI Meal Analyzer & Workouts",
+  description:
+    "Track your calories with AI-powered meal analysis and browse exercises by muscle group. Your complete fitness companion.",
 };
 
 export default function RootLayout({
@@ -20,10 +24,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body
-        className={`${outfit.variable} font-sans antialiased`}
-      >
-        {children}
+      <body className={`${outfit.variable} font-sans antialiased`}>
+        <WorkoutProvider>
+          <Navbar />
+          {children}
+          <Toaster richColors position="bottom-right" />
+        </WorkoutProvider>
       </body>
     </html>
   );
