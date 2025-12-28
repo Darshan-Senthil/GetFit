@@ -80,11 +80,30 @@ function CalendarIcon({ className }: { className?: string }) {
   );
 }
 
+function ChartIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+      />
+    </svg>
+  );
+}
+
 const navItems = [
   { href: "/", label: "Track Calories", icon: FlameIcon },
   { href: "/workouts", label: "Workouts", icon: DumbbellIcon },
   { href: "/stretches", label: "Stretches", icon: StretchIcon },
   { href: "/calendar", label: "Calendar", icon: CalendarIcon },
+  { href: "/progress", label: "Progress", icon: ChartIcon },
 ];
 
 // Color mapping for each route with explicit Tailwind classes
@@ -125,6 +144,13 @@ const tabColorMap: Record<
     bg: "bg-amber-500/15",
     shadow: "shadow-amber-500/20",
     shadowHover: "group-hover:shadow-amber-500/40",
+  },
+  "/progress": {
+    gradient: "bg-gradient-to-br from-violet-500 to-purple-500",
+    text: "text-violet-400",
+    bg: "bg-violet-500/15",
+    shadow: "shadow-violet-500/20",
+    shadowHover: "group-hover:shadow-violet-500/40",
   },
 };
 
