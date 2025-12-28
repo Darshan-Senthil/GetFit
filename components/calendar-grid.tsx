@@ -13,6 +13,11 @@ import {
   workoutOptions,
 } from "@/lib/weeklyWorkout";
 import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useWorkout } from "@/context/workout-context";
 
 interface CalendarGridProps {
@@ -21,10 +26,15 @@ interface CalendarGridProps {
 
 export function CalendarGrid({ todayWorkoutIndex = 0 }: CalendarGridProps) {
   const today = new Date();
-  const { toggleWorkoutCompletion, isWorkoutCompleted } = useWorkout();
+  const {
+    setWorkoutStatus,
+    getWorkoutStatus,
+    isWorkoutCompleted,
+  } = useWorkout();
   const [currentDate, setCurrentDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1)
   );
+  const [openPopoverDate, setOpenPopoverDate] = useState<string | null>(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -171,117 +181,269 @@ export function CalendarGrid({ todayWorkoutIndex = 0 }: CalendarGridProps) {
           const isInCurrentMonth = isCurrentMonth(date, month);
           const workout = getWorkoutForDateWithOffset(date, todayWorkoutIndex);
           const colors = getWorkoutColorClasses(workout);
-          const isCompleted = isWorkoutCompleted(date);
+          const status = getWorkoutStatus(date);
+          const isCompleted = status === "done";
+          const isRest = status === "rest";
+          const isMissed = status === "missed";
           const isPastOrToday = date <= today;
+          const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+          const isPopoverOpen = openPopoverDate === dateKey;
+
+          // Determine cell styling based on status
+          const getStatusStyles = () => {
+            if (isCompleted) {
+              return {
+                bg: "bg-emerald-500/10",
+                border: "border-emerald-500/30",
+                text: "text-emerald-400",
+                overlay: "bg-emerald-500/5",
+              };
+            }
+            if (isRest) {
+              return {
+                bg: "bg-blue-500/10",
+                border: "border-blue-500/30",
+                text: "text-blue-400",
+                overlay: "bg-blue-500/5",
+              };
+            }
+            if (isMissed) {
+              return {
+                bg: "bg-red-500/10",
+                border: "border-red-500/30",
+                text: "text-red-400",
+                overlay: "bg-red-500/5",
+              };
+            }
+            return {
+              bg: colors.bg,
+              border: colors.border,
+              text: colors.text,
+              overlay: "",
+            };
+          };
+
+          const statusStyles = getStatusStyles();
 
           return (
-            <div
+            <Popover
               key={index}
-              className={cn(
-                "relative min-h-[100px] p-2 rounded-lg border transition-all duration-200",
-                isInCurrentMonth
-                  ? "bg-card/50 border-border hover:border-amber-500/30"
-                  : "bg-muted/10 border-transparent",
-                isToday &&
-                  `ring-2 ${colors.ring} ring-offset-2 ring-offset-background`,
-                isCompleted && isInCurrentMonth && "bg-emerald-500/10"
-              )}
+              open={isPopoverOpen}
+              onOpenChange={(open) =>
+                setOpenPopoverDate(open ? dateKey : null)
+              }
             >
-              {/* Completed Overlay */}
-              {isCompleted && isInCurrentMonth && (
-                <div className="absolute inset-0 bg-emerald-500/5 rounded-lg pointer-events-none" />
-              )}
-
-              {/* Date Number */}
-              <div
-                className={cn(
-                  "text-sm font-semibold mb-1",
-                  isCompleted && isInCurrentMonth
-                    ? "text-emerald-400"
-                    : isToday
-                    ? colors.text
-                    : isInCurrentMonth
-                    ? "text-foreground"
-                    : "text-muted-foreground/40"
-                )}
-              >
-                {date.getDate()}
-              </div>
-
-              {/* Workout Info */}
-              {isInCurrentMonth && (
+              <PopoverTrigger asChild>
                 <div
                   className={cn(
-                    "rounded-md p-1.5 border",
-                    isCompleted
-                      ? "bg-emerald-500/20 border-emerald-500/30"
-                      : colors.bg,
-                    !isCompleted && colors.border
+                    "relative min-h-[100px] p-2 rounded-lg border transition-all duration-200 cursor-pointer",
+                    isInCurrentMonth
+                      ? statusStyles.bg
+                      : "bg-muted/10 border-transparent",
+                    isInCurrentMonth && statusStyles.border,
+                    isToday &&
+                      `ring-2 ${colors.ring} ring-offset-2 ring-offset-background`,
+                    isInCurrentMonth && "hover:border-amber-500/50 hover:shadow-md"
                   )}
                 >
+                  {/* Status Overlay */}
+                  {(isCompleted || isRest || isMissed) && isInCurrentMonth && (
+                    <div
+                      className={cn(
+                        "absolute inset-0 rounded-lg pointer-events-none",
+                        statusStyles.overlay
+                      )}
+                    />
+                  )}
+
+                  {/* Date Number */}
                   <div
                     className={cn(
-                      "text-[10px] font-medium leading-tight",
-                      isCompleted
-                        ? "text-emerald-400 line-through"
-                        : colors.text
+                      "text-sm font-semibold mb-1",
+                      isCompleted && isInCurrentMonth
+                        ? "text-emerald-400"
+                        : isRest && isInCurrentMonth
+                        ? "text-blue-400"
+                        : isMissed && isInCurrentMonth
+                        ? "text-red-400"
+                        : isToday
+                        ? colors.text
+                        : isInCurrentMonth
+                        ? "text-foreground"
+                        : "text-muted-foreground/40"
                     )}
                   >
-                    {workout.name}
+                    {date.getDate()}
                   </div>
-                </div>
-              )}
 
-              {/* Completion Toggle Button - only show for past/today dates in current month */}
-              {isInCurrentMonth && isPastOrToday && (
-                <button
-                  onClick={() => toggleWorkoutCompletion(date)}
-                  className={cn(
-                    "absolute bottom-1.5 right-1.5 w-5 h-5 rounded-full border-2 transition-all duration-200",
-                    "flex items-center justify-center",
-                    "hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-background",
-                    isCompleted
-                      ? "bg-emerald-500 border-emerald-500 text-white focus:ring-emerald-500/50"
-                      : "bg-transparent border-muted-foreground/40 hover:border-emerald-500/60 focus:ring-emerald-500/50"
+                  {/* Workout Info */}
+                  {isInCurrentMonth && (
+                    <div
+                      className={cn(
+                        "rounded-md p-1.5 border",
+                        statusStyles.bg,
+                        statusStyles.border
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "text-[10px] font-medium leading-tight",
+                          statusStyles.text,
+                          isCompleted && "line-through"
+                        )}
+                      >
+                        {workout.name}
+                      </div>
+                    </div>
                   )}
-                  title={
-                    isCompleted ? "Mark as incomplete" : "Mark as complete"
-                  }
-                >
-                  {isCompleted && <CheckIcon className="w-3 h-3" />}
-                </button>
-              )}
 
-              {/* Today indicator */}
-              {isToday && !isCompleted && (
-                <div className="absolute top-1 right-1">
-                  <span className="relative flex h-2 w-2">
-                    <span
-                      className={cn(
-                        "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-                        colors.ping
+                  {/* Status Indicator Badge */}
+                  {isInCurrentMonth && (isCompleted || isRest || isMissed) && (
+                    <div className="absolute bottom-1.5 right-1.5">
+                      {isCompleted && (
+                        <div className="w-5 h-5 rounded-full bg-emerald-500 border-2 border-emerald-500 flex items-center justify-center">
+                          <CheckIcon className="w-3 h-3 text-white" />
+                        </div>
                       )}
-                    ></span>
-                    <span
-                      className={cn(
-                        "relative inline-flex rounded-full h-2 w-2",
-                        colors.dot
+                      {isRest && (
+                        <div className="w-5 h-5 rounded-full bg-blue-500 border-2 border-blue-500 flex items-center justify-center">
+                          <span className="text-[8px] text-white font-bold">R</span>
+                        </div>
                       )}
-                    ></span>
-                  </span>
-                </div>
-              )}
+                      {isMissed && (
+                        <div className="w-5 h-5 rounded-full bg-red-500 border-2 border-red-500 flex items-center justify-center">
+                          <span className="text-[8px] text-white font-bold">X</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
-              {/* Completed badge for today */}
-              {isToday && isCompleted && (
-                <div className="absolute top-1 right-1">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
+                  {/* Today indicator */}
+                  {isToday && !isCompleted && !isRest && !isMissed && (
+                    <div className="absolute top-1 right-1">
+                      <span className="relative flex h-2 w-2">
+                        <span
+                          className={cn(
+                            "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                            colors.ping
+                          )}
+                        ></span>
+                        <span
+                          className={cn(
+                            "relative inline-flex rounded-full h-2 w-2",
+                            colors.dot
+                          )}
+                        ></span>
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Status badge for today */}
+                  {isToday && (isCompleted || isRest || isMissed) && (
+                    <div className="absolute top-1 right-1">
+                      <span className="relative flex h-2 w-2">
+                        <span
+                          className={cn(
+                            "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                            isCompleted
+                              ? "bg-emerald-400"
+                              : isRest
+                              ? "bg-blue-400"
+                              : "bg-red-400"
+                          )}
+                        ></span>
+                        <span
+                          className={cn(
+                            "relative inline-flex rounded-full h-2 w-2",
+                            isCompleted
+                              ? "bg-emerald-500"
+                              : isRest
+                              ? "bg-blue-500"
+                              : "bg-red-500"
+                          )}
+                        ></span>
+                      </span>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-56 p-2 bg-card border-border"
+                align="start"
+              >
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold text-muted-foreground mb-2 px-2">
+                    Mark workout status
+                  </p>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      isCompleted
+                        ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+                        : "hover:bg-muted"
+                    )}
+                    onClick={() => {
+                      setWorkoutStatus(date, "done");
+                      setOpenPopoverDate(null);
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                      <span>Completed</span>
+                    </div>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      isRest
+                        ? "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
+                        : "hover:bg-muted"
+                    )}
+                    onClick={() => {
+                      setWorkoutStatus(date, "rest");
+                      setOpenPopoverDate(null);
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-blue-500" />
+                      <span>Rest Day</span>
+                    </div>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      isMissed
+                        ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                        : "hover:bg-muted"
+                    )}
+                    onClick={() => {
+                      setWorkoutStatus(date, "missed");
+                      setOpenPopoverDate(null);
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <span>Missed Workout</span>
+                    </div>
+                  </Button>
+                  {(isCompleted || isRest || isMissed) && (
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-left font-normal text-muted-foreground hover:bg-muted hover:text-foreground"
+                      onClick={() => {
+                        setWorkoutStatus(date, null);
+                        setOpenPopoverDate(null);
+                      }}
+                    >
+                      <span>Clear status</span>
+                    </Button>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
           );
         })}
       </div>
