@@ -36,27 +36,53 @@ function getMockResponse(): AnalyzeResponse {
   };
 }
 
-const SYSTEM_PROMPT = `You are a nutrition analysis AI. Analyze the food image and identify all visible food items.
+const SYSTEM_PROMPT = `You are an expert nutrition analysis AI specialized in identifying foods from images with high accuracy. Your task is to analyze meal images and extract detailed nutritional information.
 
-For each food item, provide:
-1. label: A clear, specific name for the food (e.g., "grilled chicken breast" not just "chicken")
-2. confidence: Your confidence level from 0 to 1
-3. portion_guess: Estimate the portion size as "small", "medium", "large", or "unknown"
-4. calories_per_100g: The approximate calories per 100 grams for this food item based on your nutritional knowledge
+CRITICAL INSTRUCTIONS:
+1. Examine the ENTIRE image carefully, including background items, side dishes, and partially visible foods
+2. Identify ALL food items present, even if they're partially obscured, in poor lighting, or at unusual angles
+3. Use context clues (serving dishes, utensils, typical meal combinations) to help identify foods
+4. For ambiguous items, make educated guesses based on visual characteristics and typical cuisine patterns
+5. If multiple portions of the same food exist, list them as separate entries or estimate total quantity
 
-IMPORTANT: You must respond with ONLY valid JSON in this exact format, no other text:
+FOOD IDENTIFICATION GUIDELINES:
+- Be specific: Use descriptive names (e.g., "chicken biryani", "boiled egg", "cucumber raita" not just "rice", "egg", "yogurt")
+- Include cooking method when visible (grilled, fried, steamed, raw, etc.)
+- Note dish names for prepared meals (e.g., "butter chicken", "pad thai", "caesar salad")
+- For mixed dishes, list main components separately when distinguishable
+- Include common accompaniments (sauces, dips, garnishes) as separate items when visible
+
+PORTION SIZE ESTIMATION:
+- "small": Appetizer-sized, condiment portions, single pieces (e.g., 1 egg, small side salad, 1/4 cup serving)
+- "medium": Standard single serving, typical meal portion (e.g., 1 chicken breast, 1 cup rice, standard bowl)
+- "large": Multiple servings, oversized portions, family-style servings (e.g., 2+ chicken pieces, large plate, >1.5 cups)
+
+CALORIE ESTIMATION:
+- Use standard nutritional databases for accurate calorie values per 100g
+- Account for cooking methods (fried foods have more calories than grilled)
+- For prepared dishes, estimate based on main ingredients and typical preparation
+- Be realistic: Common foods range from 20-600 calories per 100g depending on type and preparation
+
+CONFIDENCE SCORING:
+- 0.9-1.0: Very clear, unmistakable identification
+- 0.7-0.89: Likely correct, some uncertainty about specifics
+- 0.5-0.69: Probable guess based on visual cues
+- Below 0.5: Include only if reasonably confident it's a food item
+
+RESPONSE FORMAT:
+You MUST respond with ONLY valid JSON in this exact format, no markdown, no additional text:
 {
   "foods": [
     {
-      "label": "food name",
+      "label": "specific food name with details",
       "confidence": 0.95,
       "portion_guess": "medium",
-      "calories_per_100g": 150
+      "calories_per_100g": 220
     }
   ]
 }
 
-Be accurate with calorie estimates - use your training data on nutrition. If you cannot identify a food clearly, still include it with lower confidence.`;
+IMPORTANT: Always return a valid JSON object with a "foods" array, even if you can only identify one item. If uncertain about any detail, make your best estimate rather than omitting the food.`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -103,12 +129,26 @@ export async function POST(request: NextRequest) {
             },
             {
               type: "text",
-              text: "Analyze this meal image and identify all food items with their nutritional information.",
+              text: `Analyze this meal image thoroughly. Examine all visible foods, including:
+- Main dishes and entrees
+- Side dishes and accompaniments  
+- Sauces, dips, and condiments
+- Beverages (if applicable)
+- Any partially visible or background items
+
+For each food item identified, provide:
+1. A specific, descriptive label (include cooking method and dish name if applicable)
+2. Your confidence level (0-1)
+3. Portion size estimate (small/medium/large)
+4. Accurate calories per 100g based on standard nutritional data
+
+Look carefully at the entire image - check corners, backgrounds, and edges for any foods that might be partially visible. Even if something is unclear, make your best educated guess based on visual characteristics, colors, textures, and typical meal patterns.`,
             },
           ],
         },
       ],
-      max_tokens: 1000,
+      max_tokens: 2000,
+      temperature: 0.3,
       response_format: { type: "json_object" },
     });
 

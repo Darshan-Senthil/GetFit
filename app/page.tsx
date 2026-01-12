@@ -134,7 +134,7 @@ export default function Home() {
           {/* Main Content */}
           <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
             {/* Left Column - Upload & Preview */}
-            <div className="space-y-6">
+            <div className="space-y-6 min-w-0">
               {!imageBase64 ? (
                 <ImageUpload
                   onImageSelect={handleImageSelect}
@@ -181,15 +181,15 @@ export default function Home() {
             </div>
 
             {/* Right Column - Summary */}
-            <div className="lg:sticky lg:top-24 lg:self-start">
+            <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
               <CalorieSummary foods={foods} />
 
               {/* Empty State */}
               {foods.length === 0 && (
-                <div className="text-center py-16 px-8">
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                <div className="text-center py-8 sm:py-16 px-4 sm:px-8">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-full bg-emerald-500/10 flex items-center justify-center">
                     <svg
-                      className="w-10 h-10 text-emerald-500/50"
+                      className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-500/50"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -202,10 +202,10 @@ export default function Home() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-muted-foreground mb-2">
+                  <h3 className="text-base sm:text-lg font-semibold text-muted-foreground mb-2">
                     No Analysis Yet
                   </h3>
-                  <p className="text-sm text-muted-foreground/70">
+                  <p className="text-xs sm:text-sm text-muted-foreground/70">
                     Upload a meal image and click &quot;Analyze&quot; to see
                     nutritional breakdown
                   </p>
