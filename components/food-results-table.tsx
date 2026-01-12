@@ -60,7 +60,7 @@ export function FoodResultsTable({
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-emerald-600/30">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 !px-4 sm:!px-6 pt-4 sm:pt-6">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl font-bold flex items-center gap-2">
             <svg
@@ -101,8 +101,8 @@ export function FoodResultsTable({
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="rounded-lg border border-border overflow-hidden overflow-x-auto">
+      <CardContent className="!px-0 sm:!px-0 pb-4 sm:pb-6">
+        <div className="mx-4 sm:mx-6 rounded-lg border border-border overflow-hidden overflow-x-auto">
           <div className="min-w-full">
             <Table>
               <TableHeader>

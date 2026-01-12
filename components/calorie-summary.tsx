@@ -23,7 +23,7 @@ export function CalorieSummary({ foods }: CalorieSummaryProps) {
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-emerald-600/30 overflow-hidden">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 !px-4 sm:!px-6 pt-4 sm:pt-6">
         <CardTitle className="text-xl font-bold flex items-center gap-2">
           <svg
             className="w-5 h-5 text-emerald-400"
@@ -41,7 +41,7 @@ export function CalorieSummary({ foods }: CalorieSummaryProps) {
           Calorie Summary
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 !px-4 sm:!px-6 pb-4 sm:pb-6">
         {/* Total Calories Display */}
         <div className="text-center py-4">
           <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-emerald-400 tracking-tight">

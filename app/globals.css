@@ -127,8 +127,25 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    /* Enable smooth scrolling and proper viewport behavior */
+    scroll-behavior: smooth;
+    /* Support for mobile viewport units */
+    height: 100%;
+    height: -webkit-fill-available;
+  }
   body {
     @apply bg-background text-foreground;
+    /* Ensure body allows scrolling and uses full height */
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
+    min-height: -webkit-fill-available;
+    /* Allow vertical scrolling */
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* Prevent horizontal scroll */
+    width: 100%;
+    position: relative;
   }
 }
 

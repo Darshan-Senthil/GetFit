@@ -92,9 +92,9 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="bg-background">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <div className="relative">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/50 via-background to-lime-950/30 pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
@@ -107,7 +107,7 @@ export default function Home() {
           }}
         />
 
-        <div className="relative max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-12 lg:py-16">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 lg:py-16 pb-8">
           {/* Header */}
           <div className="text-center mb-6 sm:mb-12">
             <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-4 sm:mb-6">
@@ -132,9 +132,9 @@ export default function Home() {
           </div>
 
           {/* Main Content */}
-          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 w-full">
             {/* Left Column - Upload & Preview */}
-            <div className="space-y-6 min-w-0">
+            <div className="space-y-6 min-w-0 w-full">
               {!imageBase64 ? (
                 <ImageUpload
                   onImageSelect={handleImageSelect}
@@ -151,7 +151,7 @@ export default function Home() {
 
               {/* Error Message */}
               {error && (
-                <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400">
+                <div className="p-4 sm:p-5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400">
                   <div className="flex items-center gap-2">
                     <svg
                       className="w-5 h-5"
@@ -181,7 +181,7 @@ export default function Home() {
             </div>
 
             {/* Right Column - Summary */}
-            <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
+            <div className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto space-y-6 w-full">
               <CalorieSummary foods={foods} />
 
               {/* Empty State */}
@@ -218,7 +218,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-border py-6 mt-12">
-        <div className="max-w-6xl mx-auto px-4 text-center text-sm text-muted-foreground">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-muted-foreground">
           <p>Built with Next.js, OpenAI Vision, and shadcn/ui</p>
         </div>
       </footer>
