@@ -52,13 +52,15 @@ export default function StretchesPage() {
 
   // Handle selection from Today's Training pills
   const handleTodaysTrainingSelect = (muscle: MuscleTarget) => {
-    // Create a StretchMuscleGroup-like object from MuscleTarget
+    // Find the matching muscle group from the predefined list
+    // Since we're selecting from Today's Training, we can safely use type assertion
+    // The muscle.id should match one of the predefined group IDs
     const muscleGroup: StretchMuscleGroup = {
       id: muscle.id as StretchMuscleGroup["id"],
-      label: muscle.label,
-      muscleId: muscle.muscleId,
-      icon: () => null, // Icon not needed for functionality
-    };
+      label: muscle.label as StretchMuscleGroup["label"],
+      muscleId: muscle.muscleId as StretchMuscleGroup["muscleId"],
+      icon: () => <></>, // Return empty fragment instead of null
+    } as StretchMuscleGroup;
     setSelectedMuscle(muscleGroup);
   };
 

@@ -343,7 +343,7 @@ export default function ProgressPage() {
                 </CardHeader>
                 <CardContent className="p-6 pt-0 space-y-6">
                   {/* Stats Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -409,147 +409,149 @@ export default function ProgressPage() {
                         })}
                       </div>
                     </div>
-                    <div
-                      className="grid gap-1.5"
-                      style={{
-                        gridTemplateColumns: "repeat(15, minmax(0, 1fr))",
-                      }}
-                    >
-                      {last30Days.map((date, index) => {
-                        const dateKey = formatDateKey(date);
-                        const status = getWorkoutStatus(date);
-                        const isCompleted = status === "done";
-                        const isRest = status === "rest";
-                        const isMissed = status === "missed";
-                        const isToday =
-                          formatDateKey(date) === formatDateKey(today);
-                        const uniqueKey = `${dateKey}-${index}`;
+                    <div className="overflow-x-auto pb-2">
+                      <div
+                        className="grid gap-1.5 min-w-max mx-auto"
+                        style={{
+                          gridTemplateColumns: "repeat(15, minmax(0, 1fr))",
+                        }}
+                      >
+                        {last30Days.map((date, index) => {
+                          const dateKey = formatDateKey(date);
+                          const status = getWorkoutStatus(date);
+                          const isCompleted = status === "done";
+                          const isRest = status === "rest";
+                          const isMissed = status === "missed";
+                          const isToday =
+                            formatDateKey(date) === formatDateKey(today);
+                          const uniqueKey = `${dateKey}-${index}`;
 
-                        // Determine color based on status
-                        const getStatusColor = () => {
-                          if (isCompleted)
-                            return "bg-emerald-500 hover:bg-emerald-600";
-                          if (isRest) return "bg-blue-500 hover:bg-blue-600";
-                          if (isMissed) return "bg-red-500 hover:bg-red-600";
-                          return "bg-muted/40 hover:bg-muted/60";
-                        };
+                          // Determine color based on status
+                          const getStatusColor = () => {
+                            if (isCompleted)
+                              return "bg-emerald-500 hover:bg-emerald-600";
+                            if (isRest) return "bg-blue-500 hover:bg-blue-600";
+                            if (isMissed) return "bg-red-500 hover:bg-red-600";
+                            return "bg-muted/40 hover:bg-muted/60";
+                          };
 
-                        const getStatusLabel = () => {
-                          if (isCompleted) return "Completed";
-                          if (isRest) return "Rest Day";
-                          if (isMissed) return "Missed Workout";
-                          return "Not completed";
-                        };
+                          const getStatusLabel = () => {
+                            if (isCompleted) return "Completed";
+                            if (isRest) return "Rest Day";
+                            if (isMissed) return "Missed Workout";
+                            return "Not completed";
+                          };
 
-                        return (
-                          <Popover key={uniqueKey}>
-                            <PopoverTrigger asChild>
-                              <div className="flex flex-col items-center gap-1">
-                                <div
-                                  className={cn(
-                                    "aspect-square w-full rounded-md transition-all duration-200 cursor-pointer",
-                                    getStatusColor(),
-                                    isToday &&
-                                      "ring-2 ring-violet-400 ring-offset-2"
-                                  )}
-                                  title={`${date.toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                  })} - ${getStatusLabel()}`}
-                                />
-                                <span
-                                  className={cn(
-                                    "text-[10px] font-medium",
-                                    isToday
-                                      ? "text-violet-400 font-semibold"
-                                      : "text-muted-foreground"
-                                  )}
-                                >
-                                  {date.getDate()}
-                                </span>
-                              </div>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-56 p-2 bg-card border-border"
-                              align="start"
-                            >
-                              <div className="space-y-1">
-                                <p className="text-xs font-semibold text-muted-foreground mb-2 px-2">
-                                  {date.toLocaleDateString("en-US", {
-                                    weekday: "long",
-                                    month: "long",
-                                    day: "numeric",
-                                  })}
-                                </p>
-                                <Button
-                                  variant="ghost"
-                                  className={cn(
-                                    "w-full justify-start text-left font-normal",
-                                    isCompleted
-                                      ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
-                                      : "hover:bg-muted"
-                                  )}
-                                  onClick={() => {
-                                    setWorkoutStatus(date, "done");
-                                  }}
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                                    <span>Completed</span>
-                                  </div>
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  className={cn(
-                                    "w-full justify-start text-left font-normal",
-                                    isRest
-                                      ? "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
-                                      : "hover:bg-muted"
-                                  )}
-                                  onClick={() => {
-                                    setWorkoutStatus(date, "rest");
-                                  }}
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-blue-500" />
-                                    <span>Rest Day</span>
-                                  </div>
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  className={cn(
-                                    "w-full justify-start text-left font-normal",
-                                    isMissed
-                                      ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
-                                      : "hover:bg-muted"
-                                  )}
-                                  onClick={() => {
-                                    setWorkoutStatus(date, "missed");
-                                  }}
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-red-500" />
-                                    <span>Missed Workout</span>
-                                  </div>
-                                </Button>
-                                {(isCompleted || isRest || isMissed) && (
+                          return (
+                            <Popover key={uniqueKey}>
+                              <PopoverTrigger asChild>
+                                <div className="flex flex-col items-center gap-1">
+                                  <div
+                                    className={cn(
+                                      "aspect-square w-full rounded-md transition-all duration-200 cursor-pointer",
+                                      getStatusColor(),
+                                      isToday &&
+                                        "ring-2 ring-violet-400 ring-offset-2"
+                                    )}
+                                    title={`${date.toLocaleDateString("en-US", {
+                                      month: "short",
+                                      day: "numeric",
+                                    })} - ${getStatusLabel()}`}
+                                  />
+                                  <span
+                                    className={cn(
+                                      "text-[10px] font-medium",
+                                      isToday
+                                        ? "text-violet-400 font-semibold"
+                                        : "text-muted-foreground"
+                                    )}
+                                  >
+                                    {date.getDate()}
+                                  </span>
+                                </div>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                className="w-56 p-2 bg-card border-border"
+                                align="start"
+                              >
+                                <div className="space-y-1">
+                                  <p className="text-xs font-semibold text-muted-foreground mb-2 px-2">
+                                    {date.toLocaleDateString("en-US", {
+                                      weekday: "long",
+                                      month: "long",
+                                      day: "numeric",
+                                    })}
+                                  </p>
                                   <Button
                                     variant="ghost"
-                                    className="w-full justify-start text-left font-normal text-muted-foreground hover:bg-muted hover:text-foreground"
+                                    className={cn(
+                                      "w-full justify-start text-left font-normal",
+                                      isCompleted
+                                        ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+                                        : "hover:bg-muted"
+                                    )}
                                     onClick={() => {
-                                      setWorkoutStatus(date, null);
+                                      setWorkoutStatus(date, "done");
                                     }}
                                   >
-                                    <span>Clear status</span>
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                                      <span>Completed</span>
+                                    </div>
                                   </Button>
-                                )}
-                              </div>
-                            </PopoverContent>
-                          </Popover>
-                        );
-                      })}
+                                  <Button
+                                    variant="ghost"
+                                    className={cn(
+                                      "w-full justify-start text-left font-normal",
+                                      isRest
+                                        ? "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
+                                        : "hover:bg-muted"
+                                    )}
+                                    onClick={() => {
+                                      setWorkoutStatus(date, "rest");
+                                    }}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-3 h-3 rounded-full bg-blue-500" />
+                                      <span>Rest Day</span>
+                                    </div>
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    className={cn(
+                                      "w-full justify-start text-left font-normal",
+                                      isMissed
+                                        ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                                        : "hover:bg-muted"
+                                    )}
+                                    onClick={() => {
+                                      setWorkoutStatus(date, "missed");
+                                    }}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                                      <span>Missed Workout</span>
+                                    </div>
+                                  </Button>
+                                  {(isCompleted || isRest || isMissed) && (
+                                    <Button
+                                      variant="ghost"
+                                      className="w-full justify-start text-left font-normal text-muted-foreground hover:bg-muted hover:text-foreground"
+                                      onClick={() => {
+                                        setWorkoutStatus(date, null);
+                                      }}
+                                    >
+                                      <span>Clear status</span>
+                                    </Button>
+                                  )}
+                                </div>
+                              </PopoverContent>
+                            </Popover>
+                          );
+                        })}
+                      </div>
                     </div>
-                    <div className="flex items-center justify-end gap-4 text-xs text-muted-foreground flex-wrap">
+                    <div className="flex items-center justify-start sm:justify-end gap-2 sm:gap-4 text-xs text-muted-foreground flex-wrap mt-4">
                       <div className="flex items-center gap-1.5">
                         <div className="w-3 h-3 rounded-sm bg-muted/40" />
                         <span>Not completed</span>

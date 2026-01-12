@@ -23,12 +23,24 @@ export function ExerciseModal({
 }: ExerciseModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Auto-play video when modal opens
+  // Extract YouTube video ID from URL
+  const getYouTubeVideoId = (url: string | null | undefined): string | null => {
+    if (!url) return null;
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
+  };
+
+  const youtubeVideoId = getYouTubeVideoId(exercise?.videoUrl);
+  const isYouTubeVideo = !!youtubeVideoId;
+
+  // Auto-play video when modal opens (only for non-YouTube videos)
   useEffect(() => {
-    if (isOpen && videoRef.current && exercise?.videoUrl) {
+    if (isOpen && videoRef.current && exercise?.videoUrl && !isYouTubeVideo) {
       videoRef.current.play();
     }
-  }, [isOpen, exercise?.videoUrl]);
+  }, [isOpen, exercise?.videoUrl, isYouTubeVideo]);
 
   if (!exercise) return null;
 
@@ -54,19 +66,33 @@ export function ExerciseModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-card border-border p-0">
+      <DialogContent className="max-w-3xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto bg-card border-border p-0 w-[calc(100%-1rem)] sm:w-full">
         {/* Video/Image Section */}
         <div className="relative aspect-video w-full bg-black">
           {exercise.videoUrl ? (
-            <video
-              ref={videoRef}
-              src={exercise.videoUrl}
-              poster={exercise.thumbnailUrl || undefined}
-              controls
-              loop
-              playsInline
-              className="w-full h-full object-contain"
-            />
+            isYouTubeVideo && youtubeVideoId ? (
+              // YouTube video embed
+              <iframe
+                width="100%"
+                height="100%"
+                src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1`}
+                title={exercise.name}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            ) : (
+              // MP4 video from MuscleWiki
+              <video
+                ref={videoRef}
+                src={exercise.videoUrl}
+                poster={exercise.thumbnailUrl || undefined}
+                controls
+                loop
+                playsInline
+                className="w-full h-full object-contain"
+              />
+            )
           ) : exercise.thumbnailUrl ? (
             <img
               src={exercise.thumbnailUrl}

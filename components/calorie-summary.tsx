@@ -44,10 +44,10 @@ export function CalorieSummary({ foods }: CalorieSummaryProps) {
       <CardContent className="space-y-6">
         {/* Total Calories Display */}
         <div className="text-center py-4">
-          <div className="text-6xl font-bold text-emerald-400 tracking-tight">
+          <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-emerald-400 tracking-tight">
             {totalCalories}
           </div>
-          <div className="text-muted-foreground mt-1">Total Calories</div>
+          <div className="text-sm sm:text-base text-muted-foreground mt-1">Total Calories</div>
         </div>
 
         {/* Progress Bar */}

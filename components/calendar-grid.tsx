@@ -163,7 +163,7 @@ export function CalendarGrid({ todayWorkoutIndex = 0 }: CalendarGridProps) {
       </div>
 
       {/* Day Headers */}
-      <div className="grid grid-cols-7 gap-1 mb-2">
+      <div className="grid grid-cols-7 gap-1 mb-2 min-w-0">
         {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => (
           <div
             key={dayIndex}
@@ -175,7 +175,7 @@ export function CalendarGrid({ todayWorkoutIndex = 0 }: CalendarGridProps) {
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-1 min-w-0">
         {days.map((date, index) => {
           const isToday = isSameDay(date, today);
           const isInCurrentMonth = isCurrentMonth(date, month);

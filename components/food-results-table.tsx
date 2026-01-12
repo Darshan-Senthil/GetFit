@@ -1,6 +1,11 @@
 "use client";
 
-import { FoodItem, calculateCalories, generateId, PORTION_GRAMS } from "@/lib/types";
+import {
+  FoodItem,
+  calculateCalories,
+  generateId,
+  PORTION_GRAMS,
+} from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -97,103 +102,114 @@ export function FoodResultsTable({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="rounded-lg border border-border overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/30 hover:bg-muted/30">
-                <TableHead className="font-semibold">Food Item</TableHead>
-                <TableHead className="font-semibold text-center w-24">Confidence</TableHead>
-                <TableHead className="font-semibold text-center w-28">Grams</TableHead>
-                <TableHead className="font-semibold text-center w-32">Cal/100g</TableHead>
-                <TableHead className="font-semibold text-center w-28">Calories</TableHead>
-                <TableHead className="w-12"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {foods.map((food, index) => (
-                <TableRow
-                  key={food.id}
-                  className="transition-colors hover:bg-emerald-500/5"
-                  style={{
-                    animationDelay: `${index * 50}ms`,
-                  }}
-                >
-                  <TableCell>
-                    <Input
-                      value={food.label}
-                      onChange={(e) =>
-                        onUpdateFood(food.id, { label: e.target.value })
-                      }
-                      className="bg-transparent border-transparent hover:border-border focus:border-emerald-500 transition-colors"
-                      placeholder="Food name"
-                    />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {getConfidenceBadge(food.confidence)}
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      value={food.grams}
-                      onChange={(e) =>
-                        onUpdateFood(food.id, {
-                          grams: Math.max(0, parseInt(e.target.value) || 0),
-                        })
-                      }
-                      className="w-20 text-center bg-transparent border-transparent hover:border-border focus:border-emerald-500 transition-colors mx-auto"
-                      min={0}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      value={food.calories_per_100g}
-                      onChange={(e) =>
-                        onUpdateFood(food.id, {
-                          calories_per_100g: Math.max(
-                            0,
-                            parseInt(e.target.value) || 0
-                          ),
-                        })
-                      }
-                      className="w-24 text-center bg-transparent border-transparent hover:border-border focus:border-emerald-500 transition-colors mx-auto"
-                      min={0}
-                    />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <span className="font-semibold text-emerald-400">
-                      {calculateCalories(food)}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onRemoveFood(food.id)}
-                      className="h-8 w-8 text-muted-foreground hover:text-red-400 hover:bg-red-500/10"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </Button>
-                  </TableCell>
+        <div className="rounded-lg border border-border overflow-hidden overflow-x-auto">
+          <div className="min-w-full">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/30 hover:bg-muted/30">
+                  <TableHead className="font-semibold min-w-[120px]">
+                    Food Item
+                  </TableHead>
+                  <TableHead className="font-semibold text-center w-24">
+                    Confidence
+                  </TableHead>
+                  <TableHead className="font-semibold text-center w-28">
+                    Grams
+                  </TableHead>
+                  <TableHead className="font-semibold text-center w-32">
+                    Cal/100g
+                  </TableHead>
+                  <TableHead className="font-semibold text-center w-28">
+                    Calories
+                  </TableHead>
+                  <TableHead className="w-12"></TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {foods.map((food, index) => (
+                  <TableRow
+                    key={food.id}
+                    className="transition-colors hover:bg-emerald-500/5"
+                    style={{
+                      animationDelay: `${index * 50}ms`,
+                    }}
+                  >
+                    <TableCell>
+                      <Input
+                        value={food.label}
+                        onChange={(e) =>
+                          onUpdateFood(food.id, { label: e.target.value })
+                        }
+                        className="bg-transparent border-transparent hover:border-border focus:border-emerald-500 transition-colors"
+                        placeholder="Food name"
+                      />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {getConfidenceBadge(food.confidence)}
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        value={food.grams}
+                        onChange={(e) =>
+                          onUpdateFood(food.id, {
+                            grams: Math.max(0, parseInt(e.target.value) || 0),
+                          })
+                        }
+                        className="w-20 text-center bg-transparent border-transparent hover:border-border focus:border-emerald-500 transition-colors mx-auto"
+                        min={0}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        value={food.calories_per_100g}
+                        onChange={(e) =>
+                          onUpdateFood(food.id, {
+                            calories_per_100g: Math.max(
+                              0,
+                              parseInt(e.target.value) || 0
+                            ),
+                          })
+                        }
+                        className="w-24 text-center bg-transparent border-transparent hover:border-border focus:border-emerald-500 transition-colors mx-auto"
+                        min={0}
+                      />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-semibold text-emerald-400">
+                        {calculateCalories(food)}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onRemoveFood(food.id)}
+                        className="h-8 w-8 text-muted-foreground hover:text-red-400 hover:bg-red-500/10"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </CardContent>
     </Card>
   );
 }
-

@@ -32,11 +32,11 @@ export function ImagePreview({
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         
         {/* Actions */}
-        <div className="absolute bottom-4 left-4 right-4 flex gap-3">
+        <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 flex gap-2 sm:gap-3">
           <Button
             onClick={onAnalyze}
             disabled={isAnalyzing}
-            className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-sm sm:text-base"
           >
             {isAnalyzing ? (
               <span className="flex items-center gap-2">

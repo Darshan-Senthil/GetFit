@@ -31,12 +31,24 @@ interface StretchModalProps {
 export function StretchModal({ stretch, isOpen, onClose }: StretchModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Auto-play video when modal opens
+  // Extract YouTube video ID from URL
+  const getYouTubeVideoId = (url: string | null | undefined): string | null => {
+    if (!url) return null;
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
+  };
+
+  const youtubeVideoId = getYouTubeVideoId(stretch?.videoUrl);
+  const isYouTubeVideo = !!youtubeVideoId;
+
+  // Auto-play video when modal opens (only for non-YouTube videos)
   useEffect(() => {
-    if (isOpen && videoRef.current && stretch?.videoUrl) {
+    if (isOpen && videoRef.current && stretch?.videoUrl && !isYouTubeVideo) {
       videoRef.current.play();
     }
-  }, [isOpen, stretch?.videoUrl]);
+  }, [isOpen, stretch?.videoUrl, isYouTubeVideo]);
 
   if (!stretch) return null;
 
@@ -51,19 +63,33 @@ export function StretchModal({ stretch, isOpen, onClose }: StretchModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-card border-border p-0">
+      <DialogContent className="max-w-3xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto bg-card border-border p-0 w-[calc(100%-1rem)] sm:w-full">
         {/* Video/Image Section */}
         <div className="relative aspect-video w-full bg-black">
           {stretch.videoUrl ? (
-            <video
-              ref={videoRef}
-              src={stretch.videoUrl}
-              poster={stretch.thumbnailUrl || undefined}
-              controls
-              loop
-              playsInline
-              className="w-full h-full object-contain"
-            />
+            isYouTubeVideo && youtubeVideoId ? (
+              // YouTube video embed
+              <iframe
+                width="100%"
+                height="100%"
+                src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1`}
+                title={stretch.name}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            ) : (
+              // MP4 video from MuscleWiki
+              <video
+                ref={videoRef}
+                src={stretch.videoUrl}
+                poster={stretch.thumbnailUrl || undefined}
+                controls
+                loop
+                playsInline
+                className="w-full h-full object-contain"
+              />
+            )
           ) : stretch.thumbnailUrl ? (
             <img
               src={stretch.thumbnailUrl}
@@ -216,7 +242,10 @@ export function StretchModal({ stretch, isOpen, onClose }: StretchModalProps) {
                 <ul className="text-sm text-teal-200/80 space-y-1">
                   {isPreWorkout ? (
                     <>
-                      <li>• Perform dynamic movements, don&apos;t hold static positions</li>
+                      <li>
+                        • Perform dynamic movements, don&apos;t hold static
+                        positions
+                      </li>
                       <li>• Move through full range of motion gradually</li>
                       <li>• Increase intensity as your muscles warm up</li>
                     </>
@@ -323,4 +352,3 @@ function TipIcon({ className }: { className?: string }) {
     </svg>
   );
 }
-

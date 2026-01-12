@@ -1,6 +1,15 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Hide scrollbar for mobile nav */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -136,7 +145,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
   }
   50% {
@@ -153,7 +163,9 @@
 }
 
 /* Smooth transitions for interactive elements */
-button, input, a {
+button,
+input,
+a {
   @apply transition-all duration-200;
 }
 

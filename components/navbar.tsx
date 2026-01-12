@@ -1,8 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 function FlameIcon({ className }: { className?: string }) {
   return (
@@ -116,10 +118,63 @@ function SparklesIcon({ className }: { className?: string }) {
   );
 }
 
+function TargetIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+    >
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" />
+    </svg>
+  );
+}
+
+function MenuIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4 6h16M4 12h16M4 18h16"
+      />
+    </svg>
+  );
+}
+
+function XIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M6 18L18 6M6 6l12 12"
+      />
+    </svg>
+  );
+}
+
 const navItems = [
   { href: "/", label: "Track Calories", icon: FlameIcon },
   { href: "/workouts", label: "Workouts", icon: DumbbellIcon },
   { href: "/stretches", label: "Stretches", icon: StretchIcon },
+  { href: "/age-goal-fitness", label: "Smart Plans", icon: TargetIcon },
   { href: "/calendar", label: "Calendar", icon: CalendarIcon },
   { href: "/progress", label: "Progress", icon: ChartIcon },
   { href: "/personalized-plan", label: "AI Plan", icon: SparklesIcon },
@@ -178,6 +233,13 @@ const tabColorMap: Record<
     shadow: "shadow-pink-500/20",
     shadowHover: "group-hover:shadow-pink-500/40",
   },
+  "/age-goal-fitness": {
+    gradient: "bg-gradient-to-br from-indigo-500 to-purple-500",
+    text: "text-indigo-400",
+    bg: "bg-indigo-500/15",
+    shadow: "shadow-indigo-500/20",
+    shadowHover: "group-hover:shadow-indigo-500/40",
+  },
 };
 
 // Get color for current route, default to emerald for home
@@ -188,55 +250,139 @@ function getColorForRoute(pathname: string) {
 export function Navbar() {
   const pathname = usePathname();
   const colors = getColorForRoute(pathname);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div
-              className={cn(
-                "w-9 h-9 rounded-lg flex items-center justify-center shadow-lg transition-shadow",
-                colors.gradient,
-                colors.shadow,
-                colors.shadowHover
-              )}
+    <>
+      <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4">
+          <div className="flex h-14 sm:h-16 items-center justify-between gap-2">
+            {/* Logo */}
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 sm:gap-2 group shrink-0"
             >
-              <span className="text-black font-bold text-lg">G</span>
-            </div>
-            <span className="font-bold text-xl">
-              <span className="text-foreground">GetFit</span>
-              <span className={colors.text}> by Darsh</span>
-            </span>
-          </Link>
+              <div
+                className={cn(
+                  "w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center shadow-lg transition-shadow",
+                  colors.gradient,
+                  colors.shadow,
+                  colors.shadowHover
+                )}
+              >
+                <span className="text-black font-bold text-base sm:text-lg">
+                  G
+                </span>
+              </div>
+              <span className="font-bold text-sm sm:text-lg md:text-xl whitespace-nowrap">
+                <span className="text-foreground">GetFit</span>
+                <span className={cn(colors.text, "inline text-xs sm:text-base md:text-lg")}>
+                  {" "}by Darsh
+                </span>
+              </span>
+            </Link>
 
-          {/* Nav Links */}
-          <div className="flex items-center gap-1">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              const itemColors = getColorForRoute(item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                    isActive
-                      ? `${itemColors.bg} ${itemColors.text} shadow-sm`
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  )}
-                >
-                  <item.icon
-                    className={cn("w-4 h-4", isActive && itemColors.text)}
-                  />
-                  {item.label}
-                </Link>
-              );
-            })}
+            {/* Desktop Nav Links - Hidden on mobile */}
+            <div className="hidden md:flex items-center gap-1 flex-1 min-w-0 ml-4">
+              <div className="flex items-center gap-1">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href;
+                  const itemColors = getColorForRoute(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap",
+                        isActive
+                          ? `${itemColors.bg} ${itemColors.text} shadow-sm`
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      )}
+                    >
+                      <item.icon
+                        className={cn("w-4 h-4", isActive && itemColors.text)}
+                      />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? (
+                <XIcon className="h-6 w-6" />
+              ) : (
+                <MenuIcon className="h-6 w-6" />
+              )}
+            </Button>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          {/* Mobile Menu Drawer */}
+          <div className="fixed top-[56px] sm:top-[64px] left-0 right-0 bottom-0 z-40 bg-background border-t border-border/40 overflow-y-auto md:hidden">
+            <div className="max-w-6xl mx-auto px-4 py-4">
+              <nav className="flex flex-col space-y-2">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href;
+                  const itemColors = getColorForRoute(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200",
+                        isActive
+                          ? `${itemColors.bg} ${itemColors.text} shadow-sm`
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      )}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <item.icon
+                        className={cn("w-5 h-5", isActive && itemColors.text)}
+                      />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 }

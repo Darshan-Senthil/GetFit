@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -11,6 +11,7 @@ interface StretchCardProps {
   duration: string;
   videoUrl?: string | null;
   thumbnailUrl?: string | null;
+  gifUrl?: string | null;
   instructions?: string[];
   onClick?: () => void;
 }
@@ -22,6 +23,7 @@ export function StretchCard({
   duration,
   videoUrl,
   thumbnailUrl,
+  gifUrl,
   instructions = [],
   onClick,
 }: StretchCardProps) {
@@ -30,12 +32,39 @@ export function StretchCard({
   const [hasError, setHasError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const formatText = (text: string) => {
+  const formatText = (text: string | null | undefined) => {
+    if (!text) return "";
     return text
       .split(" ")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
+
+  // Extract YouTube video ID from URL
+  const getYouTubeVideoId = (url: string | null | undefined): string | null => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
+  };
+
+  // Check if videoUrl is a YouTube URL
+  const youtubeVideoId = getYouTubeVideoId(videoUrl);
+  const isYouTubeVideo = !!youtubeVideoId;
+  
+  // Determine media source priority
+  const hasGif = !!gifUrl;
+  const hasMuscleWikiVideo = videoUrl && !isYouTubeVideo;
+  const hasYouTubeVideo = isYouTubeVideo;
+  const hasThumbnail = !!thumbnailUrl;
+  const hasNoMedia = !hasGif && !hasMuscleWikiVideo && !hasYouTubeVideo && !hasThumbnail;
+
+  // Set loading to false if no media is available
+  useEffect(() => {
+    if (hasNoMedia) {
+      setIsLoading(false);
+    }
+  }, [hasNoMedia]);
 
   const handleMouseEnter = () => {
     if (videoRef.current && videoUrl) {
@@ -98,31 +127,10 @@ export function StretchCard({
           </div>
         )}
 
-        {/* Video element */}
-        {videoUrl && !hasError && (
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            poster={thumbnailUrl || undefined}
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            className={`w-full h-full object-cover transition-opacity duration-300 ${
-              isLoading ? "opacity-0" : "opacity-100"
-            }`}
-            onLoadedData={() => setIsLoading(false)}
-            onError={() => {
-              setIsLoading(false);
-              setHasError(true);
-            }}
-          />
-        )}
-
-        {/* Thumbnail fallback */}
-        {!videoUrl && thumbnailUrl && !hasError && (
+        {/* Priority 1: GIF from MuscleWiki */}
+        {hasGif && gifUrl && !hasError && (
           <img
-            src={thumbnailUrl}
+            src={gifUrl}
             alt={name}
             className="w-full h-full object-cover"
             onLoad={() => setIsLoading(false)}
@@ -133,20 +141,108 @@ export function StretchCard({
           />
         )}
 
-        {/* Play indicator */}
-        {!isPlaying && videoUrl && !hasError && !isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-transparent transition-colors">
-            <div className="w-12 h-12 rounded-full bg-cyan-500/90 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <svg
-                className="w-5 h-5 text-black ml-0.5"
-                fill="currentColor"
-                viewBox="0 0 24 24"
+        {/* Priority 2: MP4 Video from MuscleWiki */}
+        {!hasGif && hasMuscleWikiVideo && videoUrl && !hasError && (
+          <>
+            <video
+              ref={videoRef}
+              src={videoUrl}
+              poster={thumbnailUrl || undefined}
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className={`w-full h-full object-cover transition-opacity duration-300 ${
+                isLoading ? "opacity-0" : "opacity-100"
+              }`}
+              onLoadedData={() => setIsLoading(false)}
+              onError={() => {
+                setIsLoading(false);
+                setHasError(true);
+              }}
+            />
+            {/* Play indicator for MuscleWiki videos */}
+            {!isPlaying && !isLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-transparent transition-colors">
+                <div className="w-12 h-12 rounded-full bg-cyan-500/90 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg
+                    className="w-5 h-5 text-white ml-0.5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Priority 3: YouTube Video Thumbnail */}
+        {!hasGif && !hasMuscleWikiVideo && hasYouTubeVideo && youtubeVideoId && !hasError && (
+          <div className="relative w-full h-full">
+            <img
+              src={thumbnailUrl || `https://img.youtube.com/vi/${youtubeVideoId}/maxresdefault.jpg`}
+              alt={name}
+              className="w-full h-full object-cover"
+              onLoad={() => setIsLoading(false)}
+              onError={() => {
+                setIsLoading(false);
+                setHasError(true);
+              }}
+            />
+            {/* YouTube play button overlay */}
+            {!isLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/20 transition-colors">
+                <div className="w-16 h-16 rounded-full bg-cyan-600/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                  <svg
+                    className="w-8 h-8 text-white ml-1"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Priority 4: Thumbnail fallback */}
+        {!hasGif && !hasMuscleWikiVideo && !hasYouTubeVideo && hasThumbnail && !hasError && (
+          <img
+            src={thumbnailUrl || undefined}
+            alt={name}
+            className="w-full h-full object-cover"
+            onLoad={() => setIsLoading(false)}
+            onError={() => {
+              setIsLoading(false);
+              setHasError(true);
+            }}
+          />
+        )}
+
+        {/* Priority 5: Placeholder when no media available */}
+        {hasNoMedia && !hasError && (
+          <div className="absolute inset-0 bg-gradient-to-br from-muted/30 to-muted/10 flex flex-col items-center justify-center p-4">
+            <div className="text-center">
+              <StretchIcon className="w-16 h-16 mx-auto mb-3 opacity-30" />
+              <p className="text-sm font-medium text-muted-foreground mb-2">
+                Video coming soon
+              </p>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // You can add feedback functionality here
+                }}
+                className="text-xs text-cyan-400 hover:text-cyan-300 underline"
               >
-                <path d="M8 5v14l11-7z" />
-              </svg>
+                Help us improve this
+              </button>
             </div>
           </div>
         )}
+
 
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-80 pointer-events-none" />

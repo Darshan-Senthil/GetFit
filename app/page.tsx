@@ -107,32 +107,32 @@ export default function Home() {
           }}
         />
 
-        <div className="relative max-w-6xl mx-auto px-4 py-12 sm:py-16">
+        <div className="relative max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-12 lg:py-16">
           {/* Header */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
+          <div className="text-center mb-6 sm:mb-12">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-4 sm:mb-6">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span className="text-sm text-emerald-400 font-medium">
+              <span className="text-xs sm:text-sm text-emerald-400 font-medium">
                 AI-Powered Nutrition Analysis
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight mb-3 sm:mb-4 px-2">
               <span className="text-foreground">Track</span>
               <span className="text-emerald-400"> Calories</span>
             </h1>
 
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
               Upload a photo of your meal and let AI instantly analyze the
               nutritional content. Track your calories with precision and ease.
             </p>
           </div>
 
           {/* Main Content */}
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
             {/* Left Column - Upload & Preview */}
             <div className="space-y-6">
               {!imageBase64 ? (

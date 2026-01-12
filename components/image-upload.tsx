@@ -15,8 +15,9 @@ export function ImageUpload({ onImageSelect, disabled }: ImageUploadProps) {
 
   const handleFile = useCallback(
     (file: File) => {
-      if (!file.type.match(/^image\/(jpeg|png|jpg)$/)) {
-        alert("Please upload a JPG or PNG image");
+      // Accept any image type (including HEIC, WebP, etc.)
+      if (!file.type.startsWith("image/")) {
+        alert("Please upload an image file");
         return;
       }
 
@@ -24,6 +25,9 @@ export function ImageUpload({ onImageSelect, disabled }: ImageUploadProps) {
       reader.onload = (e) => {
         const base64 = e.target?.result as string;
         onImageSelect(base64);
+      };
+      reader.onerror = () => {
+        alert("Error reading image file. Please try another image.");
       };
       reader.readAsDataURL(file);
     },
@@ -71,7 +75,7 @@ export function ImageUpload({ onImageSelect, disabled }: ImageUploadProps) {
     <Card
       className={`
         relative cursor-pointer transition-all duration-300 ease-out
-        border-2 border-dashed p-8
+        border-2 border-dashed
         ${
           isDragging
             ? "border-emerald-400 bg-emerald-500/10 scale-[1.02]"
@@ -87,22 +91,22 @@ export function ImageUpload({ onImageSelect, disabled }: ImageUploadProps) {
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/jpeg,image/png,image/jpg"
+        accept="image/*"
         className="hidden"
         onChange={handleFileChange}
         disabled={disabled}
       />
 
-      <div className="flex flex-col items-center justify-center gap-4 text-center">
+      <div className="flex flex-col items-center justify-center gap-3 sm:gap-4 text-center p-4 sm:p-8">
         <div
           className={`
-          w-16 h-16 rounded-full flex items-center justify-center
+          w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center
           transition-all duration-300
           ${isDragging ? "bg-emerald-500/30 scale-110" : "bg-emerald-500/20"}
         `}
         >
           <svg
-            className={`w-8 h-8 transition-colors ${
+            className={`w-6 h-6 sm:w-8 sm:h-8 transition-colors ${
               isDragging ? "text-emerald-300" : "text-emerald-400"
             }`}
             fill="none"
@@ -119,14 +123,16 @@ export function ImageUpload({ onImageSelect, disabled }: ImageUploadProps) {
         </div>
 
         <div>
-          <p className="text-lg font-semibold text-foreground">
-            {isDragging ? "Drop your meal image here" : "Upload your meal image"}
+          <p className="text-base sm:text-lg font-semibold text-foreground">
+            {isDragging
+              ? "Drop your meal image here"
+              : "Upload your meal image"}
           </p>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Drag & drop or click to browse
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            Supports JPG and PNG
+            Supports all image formats (JPG, PNG, HEIC)
           </p>
         </div>
 
@@ -146,4 +152,3 @@ export function ImageUpload({ onImageSelect, disabled }: ImageUploadProps) {
     </Card>
   );
 }
-
